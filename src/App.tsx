@@ -48,7 +48,7 @@ function App() {
   const NEW_SUBSIDIZED_PRICE = 1.99;
   const SUBSIDY_LIMIT = 300;
   const UNSUBSIDIZED_PRICE = 2.6; // Price for fuel above 300L limit
-  const MARKET_PRICE = 3.20; // Market price without any subsidy
+  const MARKET_PRICE = 2.6; // Market price without any subsidy
 
   const calculation = useMemo((): FuelCalculation | null => {
     const tank = parseFloat(tankSize);
@@ -323,43 +323,56 @@ function App() {
                           Current System vs No Subsidy
                         </div>
                         <div className="text-2xl font-bold text-green-700">
-                          💰 Save {formatCurrency(calculation.savingsVsNoSubsidy)}
+                          💰 Save{" "}
+                          {formatCurrency(calculation.savingsVsNoSubsidy)}
                         </div>
                         <div className="text-xs text-gray-500 mt-1">
                           per month with current subsidy
                         </div>
                       </div>
-                      
                       <div className="text-center">
                         <div className="text-sm text-gray-600 mb-2">
                           New System vs No Subsidy
                         </div>
                         <div className="text-2xl font-bold text-green-700">
-                          💰 Save {formatCurrency(calculation.newSystemSavingsVsNoSubsidy)}
+                          💰 Save{" "}
+                          {formatCurrency(
+                            calculation.newSystemSavingsVsNoSubsidy
+                          )}
                         </div>
                         <div className="text-xs text-gray-500 mt-1">
                           per month with new subsidy
                         </div>
                       </div>
                     </div>
-                    
+
                     <Separator className="my-4" />
-                    
+
                     <div className="text-center">
                       <div className="text-sm text-gray-600 mb-2">
                         Annual Savings vs Market Price
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="bg-white rounded-lg p-3 border">
-                          <div className="text-xs text-gray-500">Current System</div>
+                          <div className="text-xs text-gray-500">
+                            Current System
+                          </div>
                           <div className="text-lg font-bold text-green-600">
-                            +{formatCurrency(calculation.savingsVsNoSubsidy * 12)}
+                            +
+                            {formatCurrency(
+                              calculation.savingsVsNoSubsidy * 12
+                            )}
                           </div>
                         </div>
                         <div className="bg-white rounded-lg p-3 border">
-                          <div className="text-xs text-gray-500">New System</div>
+                          <div className="text-xs text-gray-500">
+                            New System
+                          </div>
                           <div className="text-lg font-bold text-green-600">
-                            +{formatCurrency(calculation.newSystemSavingsVsNoSubsidy * 12)}
+                            +
+                            {formatCurrency(
+                              calculation.newSystemSavingsVsNoSubsidy * 12
+                            )}
                           </div>
                         </div>
                       </div>
@@ -520,7 +533,8 @@ function App() {
                 This calculator compares Malaysia's current RON95 subsidy system
                 (RM 2.05/L unlimited) with the new targeted subsidy system (RM
                 1.99/L for the first 300 litres per month, RM 2.60/L after) and
-                shows comparison with market price (RM {MARKET_PRICE.toFixed(2)}/L without subsidy).
+                shows comparison with market price (RM {MARKET_PRICE.toFixed(2)}
+                /L without subsidy).
               </p>
             </div>
           </CardContent>
