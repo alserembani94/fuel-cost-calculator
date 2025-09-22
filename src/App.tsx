@@ -29,7 +29,10 @@ interface FuelCalculation {
   currentMonthlyLitres: number;
   currentMonthlyCost: number;
   newMonthlyCost: number;
+  noSubsidyCost: number;
   savings: number;
+  savingsVsNoSubsidy: number;
+  newSystemSavingsVsNoSubsidy: number;
   dailyConsumption: number;
   refuelFrequency: number;
   exceedsLimit: boolean;
@@ -45,6 +48,7 @@ function App() {
   const NEW_SUBSIDIZED_PRICE = 1.99;
   const SUBSIDY_LIMIT = 300;
   const UNSUBSIDIZED_PRICE = 2.6; // Price for fuel above 300L limit
+  const MARKET_PRICE = 3.20; // Market price without any subsidy
 
   const calculation = useMemo((): FuelCalculation | null => {
     const tank = parseFloat(tankSize);
@@ -55,6 +59,9 @@ function App() {
     const currentMonthlyLitres = cost / CURRENT_PRICE;
     const dailyConsumption = currentMonthlyLitres / 30;
     const refuelFrequency = Math.ceil(currentMonthlyLitres / tank);
+
+    // Calculate cost without any subsidy
+    const noSubsidyCost = currentMonthlyLitres * MARKET_PRICE;
 
     let newMonthlyCost: number;
     let subsidizedLitres: number;
@@ -76,12 +83,17 @@ function App() {
     }
 
     const savings = cost - newMonthlyCost;
+    const savingsVsNoSubsidy = noSubsidyCost - cost;
+    const newSystemSavingsVsNoSubsidy = noSubsidyCost - newMonthlyCost;
 
     return {
       currentMonthlyLitres,
       currentMonthlyCost: cost,
       newMonthlyCost,
+      noSubsidyCost,
       savings,
+      savingsVsNoSubsidy,
+      newSystemSavingsVsNoSubsidy,
       dailyConsumption,
       refuelFrequency,
       exceedsLimit,
@@ -226,12 +238,12 @@ function App() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="p-6">
-                    <div className="grid md:grid-cols-3 gap-6">
+                    <div className="grid md:grid-cols-4 gap-6">
                       <div className="text-center">
                         <div className="text-sm text-gray-600 mb-1">
                           Current System
                         </div>
-                        <div className="text-2xl font-bold text-gray-900">
+                        <div className="text-xl font-bold text-gray-900">
                           {formatCurrency(calculation.currentMonthlyCost)}
                         </div>
                         <div className="text-xs text-gray-500">
@@ -251,11 +263,23 @@ function App() {
                         <div className="text-sm text-gray-600 mb-1">
                           New System
                         </div>
-                        <div className="text-2xl font-bold text-gray-900">
+                        <div className="text-xl font-bold text-gray-900">
                           {formatCurrency(calculation.newMonthlyCost)}
                         </div>
                         <div className="text-xs text-gray-500">
                           RM 1.99/L (first 300L), RM 2.60/L after
+                        </div>
+                      </div>
+
+                      <div className="text-center">
+                        <div className="text-sm text-gray-600 mb-1">
+                          No Subsidy
+                        </div>
+                        <div className="text-xl font-bold text-red-700">
+                          {formatCurrency(calculation.noSubsidyCost)}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          RM {MARKET_PRICE.toFixed(2)}/L market price
                         </div>
                       </div>
                     </div>
@@ -276,6 +300,68 @@ function App() {
                         {calculation.savings >= 0
                           ? " per month"
                           : " more per month"}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* No Subsidy Comparison */}
+                <Card className="shadow-lg border-0 bg-gradient-to-r from-orange-50 to-red-50">
+                  <CardHeader className="bg-gradient-to-r from-orange-600 to-red-600 text-white">
+                    <CardTitle className="flex items-center gap-2">
+                      <AlertTriangle className="h-6 w-6" />
+                      Without Subsidy Impact
+                    </CardTitle>
+                    <CardDescription className="text-orange-100">
+                      How much you save compared to market price
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="text-center">
+                        <div className="text-sm text-gray-600 mb-2">
+                          Current System vs No Subsidy
+                        </div>
+                        <div className="text-2xl font-bold text-green-700">
+                          💰 Save {formatCurrency(calculation.savingsVsNoSubsidy)}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          per month with current subsidy
+                        </div>
+                      </div>
+                      
+                      <div className="text-center">
+                        <div className="text-sm text-gray-600 mb-2">
+                          New System vs No Subsidy
+                        </div>
+                        <div className="text-2xl font-bold text-green-700">
+                          💰 Save {formatCurrency(calculation.newSystemSavingsVsNoSubsidy)}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          per month with new subsidy
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Separator className="my-4" />
+                    
+                    <div className="text-center">
+                      <div className="text-sm text-gray-600 mb-2">
+                        Annual Savings vs Market Price
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-white rounded-lg p-3 border">
+                          <div className="text-xs text-gray-500">Current System</div>
+                          <div className="text-lg font-bold text-green-600">
+                            +{formatCurrency(calculation.savingsVsNoSubsidy * 12)}
+                          </div>
+                        </div>
+                        <div className="bg-white rounded-lg p-3 border">
+                          <div className="text-xs text-gray-500">New System</div>
+                          <div className="text-lg font-bold text-green-600">
+                            +{formatCurrency(calculation.newSystemSavingsVsNoSubsidy * 12)}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -433,8 +519,8 @@ function App() {
               <p className="text-sm text-slate-600 max-w-3xl mx-auto leading-relaxed">
                 This calculator compares Malaysia's current RON95 subsidy system
                 (RM 2.05/L unlimited) with the new targeted subsidy system (RM
-                1.99/L for the first 300 litres per month). Fuel consumption
-                above 300L is calculated at RM 2.60/L.
+                1.99/L for the first 300 litres per month, RM 2.60/L after) and
+                shows comparison with market price (RM {MARKET_PRICE.toFixed(2)}/L without subsidy).
               </p>
             </div>
           </CardContent>
