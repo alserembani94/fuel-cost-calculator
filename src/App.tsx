@@ -267,7 +267,7 @@ function App() {
                           {formatCurrency(calculation.newMonthlyCost)}
                         </div>
                         <div className="text-xs text-gray-500">
-                          RM 1.99/L (first 300L), RM 2.60/L after
+                          RM 1.99/L (first 300L), RM {UNSUBSIDIZED_PRICE.toFixed(2)}/L after
                         </div>
                       </div>
 
